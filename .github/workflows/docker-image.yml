@@ -1,18 +1,26 @@
-name: CI-CD-Pipeline
-on: [push]
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and Push
+
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
-          tags: likith3105/aida-project:latest
+          # This creates a repository named 'aida-project' in your Docker Hub
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/aida-project:latest
